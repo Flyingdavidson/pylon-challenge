@@ -1,59 +1,65 @@
 "use client";
 
-import { useFrame } from "@react-three/fiber";
-import { useRef } from "react";
+import { forwardRef } from "react";
 import * as THREE from "three";
 
-type Props = {
-  x: number;
+type AircraftProps = {
+  x?: number;
 };
 
-export default function Aircraft({ x }: Props) {
-  const ref = useRef<THREE.Group>(null);
-
-  useFrame((_, delta) => {
-    if (!ref.current) return;
-
-    ref.current.position.x = THREE.MathUtils.lerp(
-      ref.current.position.x,
-      x,
-      delta * 8
-    );
-
-    ref.current.rotation.z = THREE.MathUtils.lerp(
-      ref.current.rotation.z,
-      -x * 0.35,
-      delta * 8
-    );
-
-    ref.current.position.y = 0.3 + Math.abs(ref.current.rotation.z) * 0.08;
-  });
-
+const Aircraft = forwardRef<THREE.Group, AircraftProps>(function Aircraft(
+  { x = 0 },
+  ref
+) {
   return (
-    <group ref={ref} position={[0, 0.3, 0]}>
+    <group ref={ref} position={[x, 1.2, 0]} castShadow>
       {/* Fuselage */}
-      <mesh>
-        <boxGeometry args={[0.28, 0.14, 1.3]} />
+      <mesh castShadow>
+        <boxGeometry args={[0.35, 0.35, 1.8]} />
         <meshStandardMaterial color="#d62828" />
       </mesh>
 
-      {/* Wings */}
-      <mesh position={[0, 0, 0]}>
-        <boxGeometry args={[1.4, 0.04, 0.25]} />
-        <meshStandardMaterial color="#ffffff" />
-      </mesh>
-
-      {/* Tail */}
-      <mesh position={[0, 0.18, -0.55]}>
-        <boxGeometry args={[0.06, 0.28, 0.18]} />
-        <meshStandardMaterial color="#ffffff" />
-      </mesh>
-
       {/* Nose */}
-      <mesh position={[0, 0, 0.72]}>
-        <sphereGeometry args={[0.11, 16, 16]} />
+      <mesh position={[0, 0, -1.05]} castShadow>
+        <coneGeometry args={[0.18, 0.45, 20]} />
+        <meshStandardMaterial color="#ffffff" />
+      </mesh>
+
+      {/* Wings */}
+      <mesh position={[0, 0, -0.15]} castShadow>
+        <boxGeometry args={[2.3, 0.08, 0.55]} />
+        <meshStandardMaterial color="#1d3557" />
+      </mesh>
+
+      {/* Tailplane */}
+      <mesh position={[0, 0.15, 0.8]} castShadow>
+        <boxGeometry args={[0.9, 0.06, 0.28]} />
+        <meshStandardMaterial color="#1d3557" />
+      </mesh>
+
+      {/* Fin */}
+      <mesh position={[0, 0.32, 0.82]} castShadow>
+        <boxGeometry args={[0.06, 0.45, 0.2]} />
+        <meshStandardMaterial color="#1d3557" />
+      </mesh>
+
+      {/* Canopy */}
+      <mesh position={[0, 0.18, -0.15]}>
+        <sphereGeometry args={[0.17, 16, 16]} />
+        <meshStandardMaterial
+          color="#90caf9"
+          transparent
+          opacity={0.85}
+        />
+      </mesh>
+
+      {/* Propeller */}
+      <mesh position={[0, 0, -1.28]}>
+        <boxGeometry args={[0.05, 0.85, 0.02]} />
         <meshStandardMaterial color="#202020" />
       </mesh>
     </group>
   );
-}
+});
+
+export default Aircraft;
